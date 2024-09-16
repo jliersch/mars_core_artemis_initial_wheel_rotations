@@ -81,6 +81,9 @@
     #define DEFAULT_CONFIG_DIR "."
 #endif
 
+#include <cstdlib> 
+#include <ctime> 
+
 typedef envire::core::GraphTraits::vertex_descriptor VertexDesc;
 
 
@@ -756,6 +759,17 @@ namespace mars
 
         void Simulator::StartSimulation()
         {
+            auto wheelJoints = std::vector<std::string>{"artemisfront_left", "artemisfront_right", "artemismiddle_left", "artemismiddle_right", "artemisrear_left", "artemisrear_right"};
+            constexpr auto seed = 40;
+            srand(seed);
+            for (auto wheel_joint : wheelJoints)
+            {
+                auto id = control->joints->getID(wheel_joint);
+                auto randomrad = static_cast<double>(rand() % 360) / M_PI_2;
+                std::cout << "Setting value for joint " << wheel_joint << " to " << randomrad << std::endl;
+                control->joints->setOfflineValue(id, randomrad);
+            }
+
             fprintf(stderr, "Simulation started ....\n");
             stepping_mutex.lock();
             simulationStatus = RUNNING;
